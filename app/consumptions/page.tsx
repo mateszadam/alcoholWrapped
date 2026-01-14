@@ -176,7 +176,10 @@ export default async function UserConsumptions() {
             }
             `}</style>
 
-			<div className="container">
+			<div
+				className="container"
+				style={{ marginTop: '80px' }}
+			>
 				<div className="left-section">
 					<h2 className="section-title">Eddigi fogyasztások</h2>
 

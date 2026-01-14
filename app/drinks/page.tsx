@@ -18,7 +18,10 @@ export default async function Drinks() {
 	}
 
 	return (
-		<div className="page-wrapper">
+		<div
+			className="page-wrapper"
+			style={{ marginTop: '80px' }}
+		>
 			<style>{`
 
             .page-wrapper {

@@ -9,6 +9,7 @@ import {
 } from '@clerk/nextjs';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import 'tailwindcss';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -53,12 +54,7 @@ export default function RootLayout({
 					style={{ backgroundColor: '#0f172a', color: 'white' }}
 				>
 					<SignedIn>
-						<nav
-							style={{
-								marginLeft: '20px',
-							}}
-							className="fixed top-0 z-50 w-full border-b border-white/10 bg-slate-950/70 backdrop-blur-xl transition-all supports-[backdrop-filter]:bg-slate-950/60"
-						>
+						<nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-slate-950/70 backdrop-blur-xl transition-all supports-[backdrop-filter]:bg-slate-950/60">
 							{/* Flex Container: justify-between pushes content to far edges */}
 							<div className="flex h-16 items-center justify-between px-6 md:px-8">
 								{/* --- LEFT SIDE: Logo & Navigation --- */}

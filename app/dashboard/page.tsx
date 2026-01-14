@@ -212,7 +212,10 @@ export default function StatisticsPage() {
 		const kpi = kpis[0];
 
 		return (
-			<div className="dashboard">
+			<div
+				className="dashboard"
+				style={{ marginTop: '80px' }}
+			>
 				{kpi && (
 					<section className="kpi-grid">
 						<KpiCard
