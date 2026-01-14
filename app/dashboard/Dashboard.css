@@ -1,0 +1,219 @@
+:root {
+	/* Dark Mode Color Palette */
+	--bg-main: #0f172a; /* Deep Slate - Main Background */
+	--bg-card: #1e293b; /* Lighter Slate - Card Background */
+	--text-primary: #f1f5f9; /* Off-white */
+	--text-secondary: #94a3b8; /* Muted Blue-Gray */
+	--accent-primary: #38bdf8; /* Bright Sky Blue */
+	--accent-secondary: #818cf8; /* Indigo/Purple for variety */
+	--border-color: #334155; /* Subtle border */
+	--shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Container & Resets */
+.dashboard {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+		Arial, sans-serif;
+	color: var(--text-primary);
+	padding: 10px;
+	background-color: var(--bg-main);
+	box-sizing: border-box;
+}
+
+.dashboard-header h1 {
+	font-size: 1.5rem;
+	margin-bottom: 20px;
+	color: var(--text-primary);
+}
+
+/* KPI Grid */
+.kpi-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+	margin-bottom: 30px;
+}
+
+.kpi-card {
+	background: var(--bg-card);
+	padding: 20px;
+	border-radius: 12px;
+	box-shadow: 0 4px 6px var(--shadow-color);
+	text-align: center;
+	border: 1px solid var(--border-color);
+}
+
+.kpi-value {
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--accent-primary);
+	text-shadow: 0 0 10px rgba(56, 189, 248, 0.2); /* Subtle glow */
+}
+
+.kpi-label {
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-top: 5px;
+}
+
+/* Main Layout Grid */
+.main-content-grid {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 20px;
+}
+
+@media (max-width: 768px) {
+	.main-content-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Charts */
+.charts-column {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.chart-container {
+	background: var(--bg-card);
+	padding: 20px;
+	border-radius: 12px;
+	border: 1px solid var(--border-color);
+	box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.chart-container h3 {
+	margin-top: 0;
+	margin-bottom: 20px;
+	font-size: 1.1rem;
+	color: var(--text-primary);
+}
+
+.bar-chart {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	height: 200px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.trend-chart {
+	justify-content: flex-start;
+	gap: 20px;
+}
+
+.bar-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	height: 100%;
+	flex: 1;
+	position: relative;
+}
+
+.trend-chart .bar-wrapper {
+	flex: 0 0 60px;
+}
+
+.bar {
+	width: 80%;
+	background: linear-gradient(180deg, var(--accent-primary) 0%, #0284c7 100%);
+	border-radius: 4px 4px 0 0;
+	transition: height 0.3s ease;
+	min-height: 2px;
+	box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+.trend-bar {
+	background: linear-gradient(180deg, var(--accent-secondary) 0%, #4f46e5 100%);
+	box-shadow: 0 0 8px rgba(129, 140, 248, 0.3);
+}
+
+.bar:hover {
+	filter: brightness(1.2);
+	cursor: pointer;
+}
+
+.bar-label {
+	position: absolute;
+	bottom: -25px;
+	font-size: 0.75rem;
+	color: var(--text-secondary);
+}
+
+.bar-value {
+	font-size: 0.75rem;
+	color: var(--text-primary);
+	margin-bottom: 6px;
+	font-weight: bold;
+}
+
+/* Drinks List */
+.drinks-column .card {
+	background: var(--bg-card);
+	padding: 20px;
+	border-radius: 12px;
+	border: 1px solid var(--border-color);
+	box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.drinks-column h3 {
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 1.1rem;
+	color: var(--text-primary);
+	border-bottom: 1px solid var(--border-color);
+	padding-bottom: 10px;
+}
+
+.drink-row {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	padding: 12px 0;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.drink-row:last-child {
+	border-bottom: none;
+}
+
+.drink-img-wrapper {
+	width: 50px;
+	height: 50px;
+	border-radius: 12px;
+	overflow: hidden;
+	flex-shrink: 0;
+	background-color: #334155; /* Dark placeholder */
+	border: 1px solid var(--border-color);
+}
+
+.drink-img-wrapper img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.drink-info h4 {
+	margin: 0 0 5px 0;
+	font-size: 1rem;
+	color: var(--text-primary);
+}
+
+.drink-stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+}
+
+.drink-stats strong {
+	color: var(--accent-primary);
+}
