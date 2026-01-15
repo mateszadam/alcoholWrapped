@@ -1,5 +1,6 @@
 import Drink from '@/models/Drinks';
 import { redirect } from 'next/navigation';
+import './Drinks.css';
 
 export default async function Drinks() {
 	const drinks = await Drink.find({});
@@ -13,7 +14,7 @@ export default async function Drinks() {
 		};
 		await Drink.create(newDrink);
 
-		redirect('/');
+		redirect('/drinks');
 		// Optionally, you can refresh the drinks list or handle the response
 	}
 
@@ -22,117 +23,9 @@ export default async function Drinks() {
 			className="page-wrapper"
 			style={{ marginTop: '80px' }}
 		>
-			<style>{`
-
-            .page-wrapper {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                background-color: #0f172a;
-                padding: 0px 20px 40px 20px;
-                color: #cbd5e1;
-            }
-
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            @media (min-width: 900px) {
-                .container {
-                    grid-template-columns: 2fr 1fr;
-                    align-items: start;
-                }
-                .sticky-sidebar {
-                    position: sticky;
-                    top: 20px;
-                }
-            }
-
-            .drink-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 13px;
-            }
-
-            .card {
-                background: #1e293b;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
-                border: 1px solid #334155;
-                overflow: hidden;
-            }
-
-            .card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-            }
-
-            .card2 {
-                background: #1e293b;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
-                border: 1px solid #334155;
-                overflow: hidden;
-            }
-
-            .form-input {
-                width: 100%;
-                padding: 12px 16px;
-                background-color: #0f172a;
-                color: #ffffff;
-                border: 2px solid #334155;
-                border-radius: 8px;
-                font-size: 15px;
-                outline: none;
-                transition: all 0.2s;
-                box-sizing: border-box;
-            }
-
-            .form-input:focus {
-                border-color: #818cf8;
-                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            }
-
-            .submit-btn {
-                background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-                color: white;
-                font-weight: 600;
-                padding: 14px;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: filter 0.2s;
-                font-size: 16px;
-            }
-
-            .submit-btn:hover {
-                filter: brightness(120%);
-            }
-
-            .badge {
-                display: inline-block;
-                padding: 4px 8px;
-                background-color: #312e81;
-                color: #c7d2fe;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 700;
-            }
-
-            .section-title {
-                font-size: 24px;
-                font-weight: 800;
-                margin-bottom: 24px;
-                color: #f1f5f9;
-                letter-spacing: -0.5px;
-            }
-            `}</style>
-
 			<div className="container">
+				{/* --- LEFT SECTION (Drink List) --- */}
+				{/* On mobile, this moves to the BOTTOM */}
 				<div className="left-section">
 					<h2 className="section-title">Itallap</h2>
 
@@ -234,6 +127,8 @@ export default async function Drinks() {
 					</div>
 				</div>
 
+				{/* --- RIGHT SECTION (Add New Form) --- */}
+				{/* On mobile, this moves to the TOP */}
 				<div className="right-section sticky-sidebar">
 					<div
 						className="card2"
@@ -312,7 +207,6 @@ export default async function Drinks() {
 										defaultValue=""
 									>
 										<option value="l">Liter</option>
-										<option value="ml">Milliliter</option>
 										<option value="cl">Centiliter</option>
 									</select>
 								</div>

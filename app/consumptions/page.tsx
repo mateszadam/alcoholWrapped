@@ -8,6 +8,7 @@ import {
 } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import './Consumptions.css';
 
 export default async function UserConsumptions() {
 	const drinks = await Drink.find({});
@@ -62,131 +63,23 @@ export default async function UserConsumptions() {
 		},
 	]);
 
-	console.log(consumption);
-
+	const now = new Date();
+	now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+	const currentDateTime = now.toISOString().slice(0, 16);
 	return (
 		<div className="page-wrapper">
-			<style>{`
-
-            .page-wrapper {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                background-color: #0f172a;
-                padding: 0px 20px 40px 20px;
-                color: #ffffffff;
-            }
-
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            @media (min-width: 900px) {
-                .container {
-                    grid-template-columns: 2fr 1fr;
-                    align-items: start;
-                }
-                .sticky-sidebar {
-                    position: sticky;
-                    top: 20px;
-                }
-            }
-
-            .drink-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 13px;
-            }
-
-            .card {
-                background: #1e293b;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
-                border: 1px solid #334155;
-                overflow: hidden;
-            }
-
-            .card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-            }
-
-            .card2 {
-                background: #1e293b;
-                border-radius: 16px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
-                border: 1px solid #334155;
-                overflow: hidden;
-            }
-
-            .form-input {
-                width: 100%;
-                padding: 12px 16px;
-                background-color: #0f172a;
-                color: #ffffff;
-                border: 2px solid #334155;
-                border-radius: 8px;
-                font-size: 15px;
-                outline: none;
-                transition: all 0.2s;
-                box-sizing: border-box;
-            }
-
-            .form-input:focus {
-                border-color: #818cf8;
-                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            }
-
-            .submit-btn {
-                background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-                color: white;
-                font-weight: 600;
-                padding: 14px;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: filter 0.2s;
-                font-size: 16px;
-            }
-
-            .submit-btn:hover {
-                filter: brightness(120%);
-            }
-
-            .badge {
-                display: inline-block;
-                padding: 4px 8px;
-                background-color: #312e81;
-                color: #c7d2fe;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 700;
-            }
-
-            .section-title {
-                font-size: 24px;
-                font-weight: 800;
-                margin-bottom: 24px;
-                color: #f1f5f9;
-                letter-spacing: -0.5px;
-            }
-            `}</style>
-
 			<div
 				className="container"
 				style={{ marginTop: '80px' }}
 			>
+				{/* --- LEFT SECTION (Existing Consumptions) --- */}
+				{/* Because of column-reverse, this appears at the BOTTOM on mobile */}
 				<div className="left-section">
 					<h2 className="section-title">Eddigi fogyasztások</h2>
 
 					<div className="drink-grid">
 						{consumption.map((drink) => (
 							<div
-								// Updated: uses drinkId from aggregation
 								key={drink.drinkId.toString()}
 								className="card"
 							>
@@ -200,7 +93,6 @@ export default async function UserConsumptions() {
 									{drink.imageUrl ? (
 										<img
 											src={drink.imageUrl}
-											// Updated: drinkName
 											alt={drink.drinkName}
 											style={{
 												width: '100%',
@@ -250,22 +142,9 @@ export default async function UserConsumptions() {
 										>
 											{drink.drinkName}
 										</h4>
-										{/* Updated: alcoholContent */}
 										<span className="badge">{drink.alcoholContent}%</span>
 									</div>
 
-									{/* --- EXISTING UNIT INFO --- */}
-									<div
-										style={{
-											display: 'flex',
-											alignItems: 'center',
-											gap: '8px',
-											color: '#ffffffff',
-											fontSize: '14px',
-										}}
-									></div>
-
-									{/* --- NEW AGGREGATED DATA SECTION --- */}
 									<div
 										style={{
 											borderTop: '1px solid #ffffffff',
@@ -310,6 +189,8 @@ export default async function UserConsumptions() {
 					</div>
 				</div>
 
+				{/* --- RIGHT SECTION (Add New Form) --- */}
+				{/* Because of column-reverse, this appears at the TOP on mobile */}
 				<div className="right-section sticky-sidebar">
 					<div
 						className="card2"
@@ -329,7 +210,6 @@ export default async function UserConsumptions() {
 								const amountRaw = formData.get('amount')?.toString().trim();
 								const timeValue = formData.get('time')?.toString();
 								const user = formData.get('user')?.toString();
-								console.log(user);
 								if (!drinkId || !amountRaw || !user) {
 									throw new Error('Ital és mennyiség megadása kötelező.');
 								}
@@ -350,8 +230,6 @@ export default async function UserConsumptions() {
 										payload.time = parsedTime;
 									}
 								}
-
-								console.log(payload);
 
 								const { default: Consumption } = await import(
 									'@/models/Consumptions'
@@ -518,52 +396,52 @@ export default async function UserConsumptions() {
 									className="form-input"
 									type="datetime-local"
 									name="time"
-									defaultValue=""
+									defaultValue={currentDateTime}
 								/>
 							</div>
 
 							<script
 								dangerouslySetInnerHTML={{
 									__html: `
-										(() => {
-											const select = document.getElementById('consumption-drink-select');
-											if (!select) return;
-											const nameEl = document.getElementById('consumption-selected-name');
-											const unitEl = document.getElementById('consumption-selected-unit');
-											const amountUnitEl = document.getElementById('consumption-amount-unit');
-											const imgEl = document.getElementById('consumption-selected-image');
-											const placeholderEl = document.getElementById('consumption-selected-placeholder');
-											const update = () => {
-												const option = select.options[select.selectedIndex];
-												if (!option || !option.value) {
-													if (nameEl) nameEl.textContent = 'Válassz italt';
-													if (unitEl) unitEl.textContent = '-';
-													if (amountUnitEl) amountUnitEl.textContent = '-';
-													if (imgEl) {
-														imgEl.style.display = 'none';
-														imgEl.removeAttribute('src');
-													}
-													if (placeholderEl) placeholderEl.style.display = 'flex';
-													return;
-												}
-												const unit = option.getAttribute('data-unit') || '-';
-												const image = option.getAttribute('data-image') || '';
-												if (nameEl) nameEl.textContent = option.textContent?.trim() || '';
-												if (unitEl) unitEl.textContent = unit;
-												if (amountUnitEl) amountUnitEl.textContent = unit;
-												if (image && imgEl) {
-													imgEl.src = image;
-													imgEl.style.display = 'block';
-												} else if (imgEl) {
-													imgEl.style.display = 'none';
-													imgEl.removeAttribute('src');
-												}
-												if (placeholderEl) placeholderEl.style.display = image ? 'none' : 'flex';
-											};
-											select.addEventListener('change', update);
-											update();
-										})();
-									`,
+                                (() => {
+                                    const select = document.getElementById('consumption-drink-select');
+                                    if (!select) return;
+                                    const nameEl = document.getElementById('consumption-selected-name');
+                                    const unitEl = document.getElementById('consumption-selected-unit');
+                                    const amountUnitEl = document.getElementById('consumption-amount-unit');
+                                    const imgEl = document.getElementById('consumption-selected-image');
+                                    const placeholderEl = document.getElementById('consumption-selected-placeholder');
+                                    const update = () => {
+                                        const option = select.options[select.selectedIndex];
+                                        if (!option || !option.value) {
+                                            if (nameEl) nameEl.textContent = 'Válassz italt';
+                                            if (unitEl) unitEl.textContent = '-';
+                                            if (amountUnitEl) amountUnitEl.textContent = '-';
+                                            if (imgEl) {
+                                                imgEl.style.display = 'none';
+                                                imgEl.removeAttribute('src');
+                                            }
+                                            if (placeholderEl) placeholderEl.style.display = 'flex';
+                                            return;
+                                        }
+                                        const unit = option.getAttribute('data-unit') || '-';
+                                        const image = option.getAttribute('data-image') || '';
+                                        if (nameEl) nameEl.textContent = option.textContent?.trim() || '';
+                                        if (unitEl) unitEl.textContent = unit;
+                                        if (amountUnitEl) amountUnitEl.textContent = unit;
+                                        if (image && imgEl) {
+                                            imgEl.src = image;
+                                            imgEl.style.display = 'block';
+                                        } else if (imgEl) {
+                                            imgEl.style.display = 'none';
+                                            imgEl.removeAttribute('src');
+                                        }
+                                        if (placeholderEl) placeholderEl.style.display = image ? 'none' : 'flex';
+                                    };
+                                    select.addEventListener('change', update);
+                                    update();
+                                })();
+                            `,
 								}}
 							/>
 

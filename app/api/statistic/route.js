@@ -2,7 +2,6 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import Consumption from '../../../models/Consumptions';
-import { log } from 'node:console';
 import connectDB from '@/lib/db';
 import { currentUser } from '@clerk/nextjs/server';
 
@@ -102,7 +101,6 @@ export async function GET(request) {
 				},
 			},
 		]);
-		console.log(stats[0].topDrinks);
 
 		return NextResponse.json(stats[0]);
 	} catch (error) {
