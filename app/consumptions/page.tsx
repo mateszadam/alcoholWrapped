@@ -1,67 +1,61 @@
-import Consumptions from '@/models/Consumptions';
-import Drink from '@/models/Drinks';
+'use client';
 import {
 	SignedIn,
 	SignInButton,
 	SignUpButton,
 	UserButton,
 } from '@clerk/nextjs';
-import { currentUser } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 import './Consumptions.css';
+import { useEffect, useState } from 'react';
 
-export default async function UserConsumptions() {
-	const drinks = await Drink.find({});
-	const user = await currentUser();
+export default function UserConsumptions() {
+	interface IConsumptions {
+		totalAmountConsumed: number;
+		lastTimeDrank: Date;
+		timesConsumed: number;
+		drinkId: string;
+		drinkName: string;
+		unit: string;
+		alcoholContent: number;
+		imageUrl: string;
+	}
+	interface IDrink {
+		_id: string;
+		name: string;
+		alcohol: number;
+		imageUrl: string;
+		unitOfMeasurement: string;
+	}
+	const baseUrl =
+		process.env.NEXT_PUBLIC_SITE_URL ??
+		(process.env.VERCEL_URL
+			? `https://${process.env.VERCEL_URL}`
+			: 'http://localhost:3000');
 
-	const consumption = await Consumptions.aggregate([
-		{
-			// Stage 1: Group by drinkId to calculate stats
-			$group: {
-				_id: '$drinkId',
-				totalAmountConsumed: {
-					$sum: { $toDouble: '$amount' }, // Convert String to Number to sum it
-				},
-				lastTimeDrank: {
-					$max: '$time', // Get the most recent date
-				},
-				timesConsumed: {
-					$sum: 1, // Count how many times it was logged
-				},
-			},
-		},
-		{
-			// Stage 2: Join with the Drinks collection to get details
-			$lookup: {
-				from: 'drinks', // Target collection
-				localField: '_id', // The _id from Stage 1 is the drinkId
-				foreignField: '_id', // Matching _id in Drinks
-				as: 'drinkDetails',
-			},
-		},
-		{
-			// Stage 3: Flatten the drinkDetails array
-			$unwind: '$drinkDetails',
-		},
-		{
-			// Stage 4: Format the final output (Optional but recommended)
-			$project: {
-				_id: 0, // Hide the raw ID
-				drinkId: '$_id', // Keep the ID reference
-				drinkName: '$drinkDetails.name', // Pull name to top level
-				unit: '$drinkDetails.unitOfMeasurement',
-				alcoholContent: '$drinkDetails.alcohol',
-				imageUrl: '$drinkDetails.imageUrl',
-				totalAmountConsumed: 1, // Pass through calculated field
-				lastTimeDrank: 1, // Pass through calculated field
-				timesConsumed: 1, // Pass through calculated field
-			},
-		},
-		{
-			// Stage 5: Sort by most recently consumed (Optional)
-			$sort: { lastTimeDrank: -1 },
-		},
-	]);
+	const [data, setData] = useState<IConsumptions[] | null>(null);
+	const [drinks, setDrinks] = useState<IDrink[] | null>(null);
+
+	useEffect(() => {
+		const fetchStats = async () => {
+			try {
+				const res = await fetch('/api/consumption');
+				if (!res.ok) throw new Error('Hiba a lekérdezésben');
+
+				const json: IConsumptions[] = await res.json();
+				setData(json);
+
+				const res2 = await fetch('/api/drinks');
+
+				if (!res2.ok) throw new Error('Hiba a lekérdezésben');
+
+				const json2: IDrink[] = await res2.json();
+				setDrinks(json2);
+			} catch (err) {
+				console.error('Hiba:', err);
+			}
+		};
+		fetchStats();
+	}, []);
 
 	const now = new Date();
 	now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -78,7 +72,7 @@ export default async function UserConsumptions() {
 					<h2 className="section-title">Eddigi fogyasztások</h2>
 
 					<div className="drink-grid">
-						{consumption.map((drink) => (
+						{data?.map((drink) => (
 							<div
 								key={drink.drinkId.toString()}
 								className="card"
@@ -205,37 +199,22 @@ export default async function UserConsumptions() {
 
 						<form
 							action={async (formData) => {
-								'use server';
-								const drinkId = formData.get('drinkId')?.toString();
-								const amountRaw = formData.get('amount')?.toString().trim();
-								const timeValue = formData.get('time')?.toString();
-								const user = formData.get('user')?.toString();
-								if (!drinkId || !amountRaw || !user) {
-									throw new Error('Ital és mennyiség megadása kötelező.');
-								}
-								const payload: {
-									drinkId: string;
-									amount: string;
-									time?: Date;
-									user: string;
-								} = {
-									drinkId,
-									amount: amountRaw,
-									user,
-								};
+								await fetch(`${baseUrl}/api/consumption`, {
+									method: 'POST',
+									headers: { 'Content-Type': 'application/json' },
+									body: JSON.stringify({
+										drinkId: formData.get('drinkId'),
+										amount: Number(formData.get('amount')),
+										time: formData.get('time'),
+									}),
+								});
 
-								if (timeValue) {
-									const parsedTime = new Date(timeValue);
-									if (!Number.isNaN(parsedTime.getTime())) {
-										payload.time = parsedTime;
-									}
-								}
-
-								const { default: Consumption } = await import(
-									'@/models/Consumptions'
-								);
-								await Consumption.create(payload);
-								redirect('/');
+								const refreshed = await fetch('/api/consumption');
+								if (!refreshed.ok)
+									throw new Error('Hiba a statisztika frissítésénél');
+								const updatedConsumptions: IConsumptions[] =
+									await refreshed.json();
+								setData(updatedConsumptions);
 							}}
 							style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
 						>
@@ -264,7 +243,7 @@ export default async function UserConsumptions() {
 									>
 										Válassz egy italt
 									</option>
-									{drinks.map((drink) => (
+									{drinks?.map((drink) => (
 										<option
 											key={drink._id.toString()}
 											value={drink._id.toString()}
@@ -366,17 +345,6 @@ export default async function UserConsumptions() {
 									min="0"
 									required
 									placeholder="0.5"
-								/>
-								<input
-									style={{
-										display: 'none',
-									}}
-									className="form-input"
-									type="text"
-									name="user"
-									required
-									readOnly
-									value={user?.id || ''}
 								/>
 							</div>
 

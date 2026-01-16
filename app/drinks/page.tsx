@@ -1,22 +1,38 @@
+'use client';
 import Drink from '@/models/Drinks';
 import { redirect } from 'next/navigation';
 import './Drinks.css';
+import { useEffect, useState } from 'react';
+export default function Drinks() {
+	const baseUrl =
+		process.env.NEXT_PUBLIC_SITE_URL ??
+		(process.env.VERCEL_URL
+			? `https://${process.env.VERCEL_URL}`
+			: 'http://localhost:3000');
 
-export default async function Drinks() {
-	const drinks = await Drink.find({});
-	async function handleSubmit(formData: FormData) {
-		'use server';
-		const newDrink = {
-			name: formData.get('name') as string,
-			alcohol: parseFloat(formData.get('alcohol') as string),
-			imageUrl: formData.get('imageUrl') as string,
-			unitOfMeasurement: formData.get('unitOfMeasurement') as string,
-		};
-		await Drink.create(newDrink);
-
-		redirect('/drinks');
-		// Optionally, you can refresh the drinks list or handle the response
+	interface IDrink {
+		_id: string;
+		name: string;
+		alcohol: number;
+		imageUrl: string;
+		unitOfMeasurement: string;
 	}
+	const [drinks, setDrinks] = useState<IDrink[] | null>(null);
+
+	useEffect(() => {
+		const fetchStats = async () => {
+			try {
+				const res = await fetch('/api/drinks');
+				if (!res.ok) throw new Error('Hiba a lekérdezésben');
+
+				const json: IDrink[] = await res.json();
+				setDrinks(json);
+			} catch (err) {
+				console.error('Hiba:', err);
+			}
+		};
+		fetchStats();
+	}, []);
 
 	return (
 		<div
@@ -30,7 +46,7 @@ export default async function Drinks() {
 					<h2 className="section-title">Itallap</h2>
 
 					<div className="drink-grid">
-						{drinks.map((drink) => (
+						{drinks?.map((drink) => (
 							<div
 								key={drink._id.toString()}
 								className="card"
@@ -142,7 +158,24 @@ export default async function Drinks() {
 						</h3>
 
 						<form
-							action={handleSubmit}
+							action={async (formData) => {
+								await fetch(`${baseUrl}/api/drinks`, {
+									method: 'POST',
+									headers: { 'Content-Type': 'application/json' },
+									body: JSON.stringify({
+										name: formData.get('name'),
+										alcohol: Number(formData.get('alcohol')),
+										imageUrl: formData.get('imageUrl'),
+										unitOfMeasurement: formData.get('unitOfMeasurement'),
+									}),
+								});
+
+								const refreshed = await fetch('/api/drinks');
+								if (!refreshed.ok)
+									throw new Error('Hiba a statisztika frissítésénél');
+								const updatedDrinks: IDrink[] = await refreshed.json();
+								setDrinks(updatedDrinks);
+							}}
 							style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
 						>
 							<div>
