@@ -1,12 +1,6 @@
 'use client';
-import {
-	SignedIn,
-	SignInButton,
-	SignUpButton,
-	UserButton,
-} from '@clerk/nextjs';
 import './Consumptions.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 
 export default function UserConsumptions() {
 	interface IConsumptions {
@@ -57,6 +51,14 @@ export default function UserConsumptions() {
 		fetchStats();
 	}, []);
 
+	const [selectedDrinkId, setSelectedDrinkId] = useState('');
+
+	const selectedDrink = drinks?.find((d) => d._id === selectedDrinkId);
+
+	const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+		setSelectedDrinkId(e.target.value);
+	};
+
 	const now = new Date();
 	now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
 	const currentDateTime = now.toISOString().slice(0, 16);
@@ -66,8 +68,6 @@ export default function UserConsumptions() {
 				className="container"
 				style={{ marginTop: '80px' }}
 			>
-				{/* --- LEFT SECTION (Existing Consumptions) --- */}
-				{/* Because of column-reverse, this appears at the BOTTOM on mobile */}
 				<div className="left-section">
 					<h2 className="section-title">Eddigi fogyasztások</h2>
 
@@ -172,7 +172,7 @@ export default function UserConsumptions() {
 											</span>
 											<span style={{ fontSize: '14px', color: '#ffffffff' }}>
 												{new Date(drink.lastTimeDrank).toLocaleDateString(
-													'hu-HU'
+													'hu-HU',
 												)}
 											</span>
 										</div>
@@ -183,8 +183,6 @@ export default function UserConsumptions() {
 					</div>
 				</div>
 
-				{/* --- RIGHT SECTION (Add New Form) --- */}
-				{/* Because of column-reverse, this appears at the TOP on mobile */}
 				<div className="right-section sticky-sidebar">
 					<div
 						className="card2"
@@ -234,8 +232,9 @@ export default function UserConsumptions() {
 									id="consumption-drink-select"
 									name="drinkId"
 									required
+									value={selectedDrinkId}
+									onChange={handleSelectChange}
 									className="form-input"
-									defaultValue=""
 								>
 									<option
 										value=""
@@ -279,30 +278,33 @@ export default function UserConsumptions() {
 										justifyContent: 'center',
 									}}
 								>
-									<img
-										id="consumption-selected-image"
-										src={undefined}
-										alt="Kiválasztott ital"
-										style={{
-											width: '100%',
-											height: '100%',
-											objectFit: 'cover',
-											display: 'none',
-										}}
-									/>
-									<span
-										id="consumption-selected-placeholder"
-										style={{
-											fontSize: '32px',
-											display: 'flex',
-											maxWidth: '160px',
-											whiteSpace: 'nowrap',
-											overflow: 'hidden',
-											textOverflow: 'ellipsis',
-										}}
-									>
-										🍸
-									</span>
+									{selectedDrink && selectedDrink.imageUrl ? (
+										<img
+											id="consumption-selected-image"
+											src={selectedDrink.imageUrl}
+											alt={selectedDrink.name}
+											style={{ display: 'block' }}
+										/>
+									) : (
+										<div
+											id="consumption-selected-placeholder"
+											style={{ display: 'flex' }}
+										>
+											<span
+												id="consumption-selected-placeholder"
+												style={{
+													fontSize: '32px',
+													display: 'flex',
+													maxWidth: '160px',
+													whiteSpace: 'nowrap',
+													overflow: 'hidden',
+													textOverflow: 'ellipsis',
+												}}
+											>
+												🍸
+											</span>
+										</div>
+									)}
 								</div>
 								<div>
 									<p
@@ -316,10 +318,13 @@ export default function UserConsumptions() {
 											textOverflow: 'ellipsis',
 										}}
 									>
-										Válassz italt
+										{selectedDrink ? selectedDrink.name : 'Válassz italt'}
 									</p>
 									<p style={{ margin: '4px 0 0', color: '#94a3b8' }}>
-										Mértékegység: <span id="consumption-selected-unit">-</span>
+										Mértékegység:{' '}
+										<span id="consumption-selected-unit">
+											{selectedDrink ? selectedDrink.unitOfMeasurement : '-'}
+										</span>
 									</p>
 								</div>
 							</div>
@@ -335,7 +340,10 @@ export default function UserConsumptions() {
 									}}
 								>
 									Elfogyasztott mennyiség ({' '}
-									<span id="consumption-amount-unit">-</span> )
+									<span id="consumption-amount-unit">
+										{selectedDrink ? selectedDrink.unitOfMeasurement : '-'}
+									</span>{' '}
+									)
 								</label>
 								<input
 									className="form-input"
@@ -367,51 +375,6 @@ export default function UserConsumptions() {
 									defaultValue={currentDateTime}
 								/>
 							</div>
-
-							<script
-								dangerouslySetInnerHTML={{
-									__html: `
-                                (() => {
-                                    const select = document.getElementById('consumption-drink-select');
-                                    if (!select) return;
-                                    const nameEl = document.getElementById('consumption-selected-name');
-                                    const unitEl = document.getElementById('consumption-selected-unit');
-                                    const amountUnitEl = document.getElementById('consumption-amount-unit');
-                                    const imgEl = document.getElementById('consumption-selected-image');
-                                    const placeholderEl = document.getElementById('consumption-selected-placeholder');
-                                    const update = () => {
-                                        const option = select.options[select.selectedIndex];
-                                        if (!option || !option.value) {
-                                            if (nameEl) nameEl.textContent = 'Válassz italt';
-                                            if (unitEl) unitEl.textContent = '-';
-                                            if (amountUnitEl) amountUnitEl.textContent = '-';
-                                            if (imgEl) {
-                                                imgEl.style.display = 'none';
-                                                imgEl.removeAttribute('src');
-                                            }
-                                            if (placeholderEl) placeholderEl.style.display = 'flex';
-                                            return;
-                                        }
-                                        const unit = option.getAttribute('data-unit') || '-';
-                                        const image = option.getAttribute('data-image') || '';
-                                        if (nameEl) nameEl.textContent = option.textContent?.trim() || '';
-                                        if (unitEl) unitEl.textContent = unit;
-                                        if (amountUnitEl) amountUnitEl.textContent = unit;
-                                        if (image && imgEl) {
-                                            imgEl.src = image;
-                                            imgEl.style.display = 'block';
-                                        } else if (imgEl) {
-                                            imgEl.style.display = 'none';
-                                            imgEl.removeAttribute('src');
-                                        }
-                                        if (placeholderEl) placeholderEl.style.display = image ? 'none' : 'flex';
-                                    };
-                                    select.addEventListener('change', update);
-                                    update();
-                                })();
-                            `,
-								}}
-							/>
 
 							<button
 								type="submit"

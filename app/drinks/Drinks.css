@@ -114,7 +114,7 @@
 .container {
 	display: flex;
 	gap: 20px;
-	flex-direction: row; /* Desktop default */
+	flex-direction: row; 
 	align-items: flex-start;
 }
 
@@ -136,10 +136,8 @@
 	gap: 20px;
 }
 
-/* MOBILE VIEW */
 @media (max-width: 768px) {
 	.container {
-		/* This moves the Right Section (Form) to the top */
 		flex-direction: column-reverse;
 	}
 
@@ -149,7 +147,6 @@
 		margin-bottom: 30px;
 	}
 
-	/* Optional: Adjust wrapper margin if needed on mobile */
 	.page-wrapper {
 		margin-top: 80px !important;
 	}

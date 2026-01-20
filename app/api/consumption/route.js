@@ -16,49 +16,44 @@ export async function GET(request) {
 					$match: { user: user.id },
 				},
 				{
-					// Stage 1: Group by drinkId to calculate stats
 					$group: {
 						_id: '$drinkId',
 						totalAmountConsumed: {
-							$sum: { $toDouble: '$amount' }, // Convert String to Number to sum it
+							$sum: { $toDouble: '$amount' },
 						},
 						lastTimeDrank: {
-							$max: '$time', // Get the most recent date
+							$max: '$time',
 						},
 						timesConsumed: {
-							$sum: 1, // Count how many times it was logged
+							$sum: 1,
 						},
 					},
 				},
 				{
-					// Stage 2: Join with the Drinks collection to get details
 					$lookup: {
-						from: 'drinks', // Target collection
-						localField: '_id', // The _id from Stage 1 is the drinkId
-						foreignField: '_id', // Matching _id in Drinks
+						from: 'drinks',
+						localField: '_id',
+						foreignField: '_id',
 						as: 'drinkDetails',
 					},
 				},
 				{
-					// Stage 3: Flatten the drinkDetails array
 					$unwind: '$drinkDetails',
 				},
 				{
-					// Stage 4: Format the final output (Optional but recommended)
 					$project: {
-						_id: 0, // Hide the raw ID
-						drinkId: '$_id', // Keep the ID reference
-						drinkName: '$drinkDetails.name', // Pull name to top level
+						_id: 0,
+						drinkId: '$_id',
+						drinkName: '$drinkDetails.name',
 						unit: '$drinkDetails.unitOfMeasurement',
 						alcoholContent: '$drinkDetails.alcohol',
 						imageUrl: '$drinkDetails.imageUrl',
-						totalAmountConsumed: 1, // Pass through calculated field
-						lastTimeDrank: 1, // Pass through calculated field
-						timesConsumed: 1, // Pass through calculated field
+						totalAmountConsumed: 1,
+						lastTimeDrank: 1,
+						timesConsumed: 1,
 					},
 				},
 				{
-					// Stage 5: Sort by most recently consumed (Optional)
 					$sort: { lastTimeDrank: -1 },
 				},
 			]);
@@ -83,7 +78,7 @@ export async function POST(request) {
 		if (!drinkId || amount === undefined) {
 			return NextResponse.json(
 				{ message: 'drinkId and amount are required' },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 

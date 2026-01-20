@@ -1,8 +1,9 @@
 @import 'tailwindcss';
 
 .page-wrapper {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-		Arial, sans-serif;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+		sans-serif;
 	background-color: #0f172a;
 	padding: 0px 20px 40px 20px;
 	color: #ffffffff;
@@ -36,25 +37,32 @@
 .card {
 	background: #1e293b;
 	border-radius: 16px;
-	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5),
+	box-shadow:
+		0 4px 6px -1px rgba(0, 0, 0, 0.5),
 		0 2px 4px -1px rgba(0, 0, 0, 0.3);
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
 	border: 1px solid #334155;
 	overflow: hidden;
 }
 
 .card:hover {
 	transform: translateY(-4px);
-	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5),
+	box-shadow:
+		0 10px 15px -3px rgba(0, 0, 0, 0.5),
 		0 4px 6px -2px rgba(0, 0, 0, 0.3);
 }
 
 .card2 {
 	background: #1e293b;
 	border-radius: 16px;
-	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5),
+	box-shadow:
+		0 4px 6px -1px rgba(0, 0, 0, 0.5),
 		0 2px 4px -1px rgba(0, 0, 0, 0.3);
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
 	border: 1px solid #334155;
 	overflow: hidden;
 }
@@ -113,18 +121,17 @@
 .container {
 	display: flex;
 	gap: 20px;
-	/* Desktop default: Row */
 	flex-direction: row;
 	align-items: flex-start;
 }
 
 .left-section {
-	flex: 2; /* Takes up 66% on desktop */
+	flex: 2;
 	width: 100%;
 }
 
 .right-section {
-	flex: 1; /* Takes up 33% on desktop */
+	flex: 1;
 	width: 100%;
 	position: sticky;
 	top: 20px;
@@ -136,7 +143,6 @@
 	gap: 20px;
 }
 
-/* MOBILE VIEW (Screens smaller than 768px) */
 @media (max-width: 768px) {
 	.container {
 		/* This moves the Right Section (2nd child) to the top */

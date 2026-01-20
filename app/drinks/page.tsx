@@ -40,8 +40,6 @@ export default function Drinks() {
 			style={{ marginTop: '80px' }}
 		>
 			<div className="container">
-				{/* --- LEFT SECTION (Drink List) --- */}
-				{/* On mobile, this moves to the BOTTOM */}
 				<div className="left-section">
 					<h2 className="section-title">Itallap</h2>
 
@@ -143,8 +141,6 @@ export default function Drinks() {
 					</div>
 				</div>
 
-				{/* --- RIGHT SECTION (Add New Form) --- */}
-				{/* On mobile, this moves to the TOP */}
 				<div className="right-section sticky-sidebar">
 					<div
 						className="card2"

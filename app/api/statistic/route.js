@@ -8,8 +8,6 @@ import { currentUser } from '@clerk/nextjs/server';
 export async function GET(request) {
 	try {
 		await connectDB();
-
-		// 1. Dátum szűrés (pl. elmúlt 30 nap) - Opcionális, de ajánlott
 		const thirtyDaysAgo = new Date();
 		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 		const user = await currentUser();
@@ -22,10 +20,9 @@ export async function GET(request) {
 						time: { $gte: thirtyDaysAgo },
 					},
 				},
-				// Előkészítő lépés: konvertáljuk a stringet számmá és kinyerjük a dátum részeket
 				{
 					$addFields: {
-						amountNum: { $toDouble: '$amount' }, // "200" -> 200
+						amountNum: { $toDouble: '$amount' },
 						dateString: {
 							$dateToString: { format: '%Y-%m-%d', date: '$time' },
 						},
@@ -34,14 +31,13 @@ export async function GET(request) {
 				},
 				{
 					$facet: {
-						// 1. SZEKCIÓ: KPI Kártyák (Összesítő adatok)
 						kpis: [
 							{
 								$group: {
 									_id: null,
-									totalVolume: { $sum: '$amountNum' }, // Összes megivott
-									totalCount: { $sum: 1 }, // Hányszor ivott
-									uniqueDays: { $addToSet: '$dateString' }, // Egyedi napok
+									totalVolume: { $sum: '$amountNum' },
+									totalCount: { $sum: 1 },
+									uniqueDays: { $addToSet: '$dateString' },
 								},
 							},
 							{
@@ -55,8 +51,6 @@ export async function GET(request) {
 								},
 							},
 						],
-
-						// 2. SZEKCIÓ: Napi trend (utolsó 30 nap)
 						dailyTrend: [
 							{
 								$group: {
@@ -64,10 +58,8 @@ export async function GET(request) {
 									dailyTotal: { $sum: '$amountNum' },
 								},
 							},
-							{ $sort: { _id: 1 } }, // Dátum szerint növekvő
+							{ $sort: { _id: 1 } },
 						],
-
-						// 3. SZEKCIÓ: Óránkénti eloszlás (amit az előbb beszéltünk)
 						hourlyDist: [
 							{
 								$group: {
@@ -77,9 +69,6 @@ export async function GET(request) {
 							},
 							{ $sort: { _id: 1 } },
 						],
-
-						// 4. SZEKCIÓ: Top Italok (DrinkID szerint)
-						// Ha van 'drinks' táblád, itt használnál $lookup-ot
 						topDrinks: [
 							{
 								$group: {
@@ -90,16 +79,16 @@ export async function GET(request) {
 							},
 							{
 								$lookup: {
-									from: 'drinks', // Target collection
-									localField: '_id', // The _id from Stage 1 is the drinkId
-									foreignField: '_id', // Matching _id in Drinks
+									from: 'drinks',
+									localField: '_id',
+									foreignField: '_id',
 									as: 'drinkDetails',
 								},
 							},
 							{
 								$unwind: '$drinkDetails',
 							},
-							{ $sort: { count: -1 } }, // Legnépszerűbb elöl
+							{ $sort: { count: -1 } },
 							{ $limit: 5 },
 						],
 					},

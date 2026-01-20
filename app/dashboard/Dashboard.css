@@ -1,21 +1,20 @@
 @import 'tailwindcss';
 
 :root {
-	/* Dark Mode Color Palette */
-	--bg-main: #0f172a; /* Deep Slate - Main Background */
-	--bg-card: #1e293b; /* Lighter Slate - Card Background */
-	--text-primary: #f1f5f9; /* Off-white */
-	--text-secondary: #94a3b8; /* Muted Blue-Gray */
-	--accent-primary: #38bdf8; /* Bright Sky Blue */
-	--accent-secondary: #818cf8; /* Indigo/Purple for variety */
-	--border-color: #334155; /* Subtle border */
+	--bg-main: #0f172a;
+	--bg-card: #1e293b;
+	--text-primary: #f1f5f9;
+	--text-secondary: #94a3b8;
+	--accent-primary: #38bdf8;
+	--accent-secondary: #818cf8;
+	--border-color: #334155;
 	--shadow-color: rgba(0, 0, 0, 0.4);
 }
 
-/* Container & Resets */
 .dashboard {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-		Arial, sans-serif;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+		sans-serif;
 	color: var(--text-primary);
 	padding: 10px;
 	background-color: var(--bg-main);
@@ -28,7 +27,6 @@
 	color: var(--text-primary);
 }
 
-/* KPI Grid */
 .kpi-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -60,7 +58,6 @@
 	margin-top: 5px;
 }
 
-/* Main Layout Grid */
 .main-content-grid {
 	display: grid;
 	grid-template-columns: 2fr 1fr;
@@ -73,7 +70,6 @@
 	}
 }
 
-/* Charts */
 .charts-column {
 	display: flex;
 	flex-direction: column;
@@ -156,7 +152,6 @@
 	font-weight: bold;
 }
 
-/* Drinks List */
 .drinks-column .card {
 	background: var(--bg-card);
 	padding: 20px;

@@ -1,4 +1,4 @@
-'use client'; // Required for useState
+'use client';
 
 import { type Metadata } from 'next';
 import {
@@ -40,14 +40,12 @@ export default function RootLayout({
 			className="relative px-4 py-2 text-sm font-medium text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 rounded-full group"
 		>
 			{children}
-			{/* Animated Underline Effect */}
 			<span className="absolute bottom-1.5 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all duration-300 group-hover:w-1/2 opacity-0 group-hover:opacity-100" />
 		</a>
 	);
 
 	const [isOpen, setIsOpen] = useState(false);
 
-	// Helper to close menu when a link is clicked
 	const handleLinkClick = () => {
 		setIsOpen(false);
 	};
@@ -64,11 +62,8 @@ export default function RootLayout({
 				>
 					<SignedIn>
 						<nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-slate-950/70 backdrop-blur-xl transition-all supports-[backdrop-filter]:bg-slate-950/60">
-							{/* Flex Container */}
 							<div className="flex h-16 items-center justify-between px-6 md:px-8">
-								{/* --- LEFT SIDE: Logo & Desktop Nav --- */}
 								<div className="flex items-center gap-8">
-									{/* Brand Logo */}
 									<a
 										href="/"
 										className="group flex items-center gap-3"
@@ -83,7 +78,6 @@ export default function RootLayout({
 										</span>
 									</a>
 
-									{/* Desktop Navigation Links (Hidden on Mobile) */}
 									<div className="hidden md:flex items-center gap-2">
 										<NavLink href="/consumptions">Fogyasztások</NavLink>
 										<NavLink href="/drinks">Italok kezelése</NavLink>
@@ -91,7 +85,6 @@ export default function RootLayout({
 									</div>
 								</div>
 
-								{/* --- RIGHT SIDE: User Controls & Mobile Toggle --- */}
 								<div className="flex items-center gap-4">
 									<div className="hidden h-6 w-px bg-white/10 sm:block" />
 
@@ -99,13 +92,11 @@ export default function RootLayout({
 										<UserButton />
 									</div>
 
-									{/* Mobile Menu Button (Visible only on small screens) */}
 									<button
 										onClick={() => setIsOpen(!isOpen)}
 										className="group flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 md:hidden"
 										aria-label="Toggle Menu"
 									>
-										{/* Animated Icon (Hamburger to X) */}
 										<div className="relative h-4 w-4">
 											<span
 												className={`absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-current transition-all duration-300 ${
@@ -127,8 +118,6 @@ export default function RootLayout({
 								</div>
 							</div>
 
-							{/* --- MOBILE MENU DROPDOWN --- */}
-							{/* This creates a drawer that slides/fades in */}
 							<div
 								className={`border-b border-white/10 bg-slate-950/95 backdrop-blur-xl transition-all duration-300 ease-in-out md:hidden ${
 									isOpen
@@ -137,7 +126,6 @@ export default function RootLayout({
 								}`}
 							>
 								<div className="flex flex-col gap-2 p-6">
-									{/* Wrap NavLinks in a div to handle onClick closing */}
 									<div
 										onClick={handleLinkClick}
 										className="flex flex-col gap-2"
@@ -151,7 +139,6 @@ export default function RootLayout({
 						</nav>
 					</SignedIn>
 
-					{/* Main Content */}
 					<main>{children}</main>
 				</body>
 			</html>
